@@ -1,0 +1,55 @@
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using UniversityPortal.Api.Interfaces;
+using UniversityPortal.Api.Models;
+using UniversityPortal.Api.Services;
+using UniversityPortalApi.Dto;
+
+namespace UniversityPortal.Api.Controllers
+{
+    [Authorize]
+    [ApiController]
+    [Route("api/[controller]")]
+    public class GradesController : ControllerBase
+    {
+        private readonly IGradeService _gradeService;
+        private readonly IMapper _mapper;
+        public GradesController(IGradeService gradeService, IMapper mapper)
+        {
+            _gradeService = gradeService;
+            _mapper = mapper;
+        }
+
+        [HttpGet("{studentId}")]
+       
+        public async Task<ActionResult<IEnumerable<GradeDto>>> GetGrades(int studentId)
+        {
+            var grades = await _gradeService.GetGradesByStudentIdAsync(studentId);
+            var gradeDtos = _mapper.Map<IEnumerable<GradeDto>>(grades);
+            return Ok(gradeDtos);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> AddGrade(GradeDto gradeDto)
+        {
+            var grade = _mapper.Map<Grade>(gradeDto);
+            await _gradeService.AddGradeAsync(grade);
+            return CreatedAtAction(nameof(GetGrades), new { studentId = grade.StudentId }, gradeDto);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateGrade(int id, Grade grade)
+        {
+            if (id != grade.Id)
+            {
+                return BadRequest();
+            }
+            await _gradeService.UpdateGradeAsync(grade);
+            return NoContent();
+        }
+    }
+}
+
