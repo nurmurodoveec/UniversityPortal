@@ -38,13 +38,16 @@ namespace UniversityPortal.Api.Controllers
             }
             return Ok(student);
         }
-
         [HttpPost]
-        public async Task<ActionResult> AddStudent(StudentDto studentDto)
+        public async Task<IActionResult> CreateStudent([FromBody] StudentDto studentDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var student = _mapper.Map<Student>(studentDto);
             await _studentService.AddStudentAsync(student);
-            return CreatedAtAction(nameof(GetAllStudents), new { id = student.Id }, studentDto);
+            return Ok("Student added successfully.");
         }
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateStudent(int id, Student student)

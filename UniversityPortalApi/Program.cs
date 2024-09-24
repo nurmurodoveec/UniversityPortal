@@ -1,8 +1,12 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UniversityPortal.Api.Data;
 using UniversityPortal.Api.Interfaces;
 using UniversityPortal.Api.Services;
+using UniversityPortalApi.Validators;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,9 +56,10 @@ builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
         });
     };
 });
-builder.Services.AddAutoMapper(typeof(MappingProfile)); 
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
-
+builder.Services.AddValidatorsFromAssemblyContaining<StudentValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<GradeValidator>();
 builder.Services.AddScoped<LogActionFilter>();
 builder.Services.AddScoped<GlobalExceptionFilter>();
 builder.Services.AddScoped<IStudentService, StudentService>();
@@ -62,6 +67,8 @@ builder.Services.AddScoped<ISubjectService, SubjectService>();
 builder.Services.AddScoped<IGradeService, GradeService>();
 builder.Services.AddScoped<ITimetableService, TimetableService>();
 builder.Services.AddScoped<INewsService, NewsService>();
+
+
 
 var app = builder.Build();
 

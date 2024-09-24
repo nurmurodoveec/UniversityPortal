@@ -1,6 +1,15 @@
-﻿namespace UniversityPortalApi.Validators
+﻿using FluentValidation;
+using UniversityPortalApi.Dto;
+
+namespace UniversityPortalApi.Validators
 {
-    public class GradeValidator
+    public class GradeValidator : AbstractValidator<GradeDto>
     {
+        public GradeValidator()
+        {
+            RuleFor(g => g.Score)
+                .InclusiveBetween(0, 100).WithMessage("Grade must be between 0 and 100");
+        }
     }
+
 }
