@@ -16,6 +16,7 @@ namespace UniversityPortal.Api.Services
             _context = context;
         }
 
+
         public async Task<IEnumerable<Timetable>> GetAllTimetablesAsync()
         {
             return await _context.Timetables.ToListAsync();
@@ -47,5 +48,6 @@ namespace UniversityPortal.Api.Services
                 await _context.SaveChangesAsync();
             }
         }
+
     }
 }

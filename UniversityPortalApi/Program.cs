@@ -8,7 +8,24 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c=>
+{
+    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo {
+        Title = "University Portal", 
+        Version = "v1",
+        Description = "An API to perform University operations",
+        TermsOfService= new Uri("https://example.com.terms"),
+        Contact= new Microsoft.OpenApi.Models.OpenApiContact
+        {
+            Name="Nurmurodoveec",
+            Email= "nurmurodoveec@mail.ru",
+           
+        }
+          
+
+
+    });
+});
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddControllers();
@@ -52,7 +69,10 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "University Portal v1");
+    });
 }
 
 app.UseHttpsRedirection();

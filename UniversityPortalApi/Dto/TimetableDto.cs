@@ -2,7 +2,7 @@
 {
     public class TimetableDto
     {
-        public int TimetableId { get; set; }
+        public int Id { get; set; }
         public int StudentId { get; set; }
         public int SubjectId { get; set; }
         public DateTime StartTime { get; set; }

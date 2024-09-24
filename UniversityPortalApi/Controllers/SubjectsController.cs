@@ -44,7 +44,7 @@ namespace UniversityPortal.Api.Controllers
         {
             var subject = _mapper.Map<Subject>(subjectDto);
             await _subjectService.AddSubjectAsync(subject);
-            return CreatedAtAction(nameof(GetAllSubjects), new { id = subject.Id }, subjectDto);
+            return CreatedAtAction(nameof(GetAllSubjects), new { id = subject.Id }, subject);
         }
     }
 }

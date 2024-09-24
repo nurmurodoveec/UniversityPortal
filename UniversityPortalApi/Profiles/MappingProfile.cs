@@ -18,5 +18,7 @@ public class MappingProfile : Profile
 
         CreateMap<News, NewsDto>();
         CreateMap<NewsDto, News>();
+
+        CreateMap<Timetable, TimetableDto>().ReverseMap();
     }
 }

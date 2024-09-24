@@ -2,10 +2,11 @@
 {
     public class GradeDto
     {
-        public int GradeId { get; set; }
+        public int Id { get; set; }
         public int StudentId { get; set; }
-        public string Subject { get; set; }
-        public double Value { get; set; }
+        public int SubjectId { get; set; }
+        public double Score { get; set; }
+        public string GradeLetter { get; set; }  
     }
 
 }

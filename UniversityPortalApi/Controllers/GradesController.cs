@@ -10,7 +10,6 @@ using UniversityPortalApi.Dto;
 
 namespace UniversityPortal.Api.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class GradesController : ControllerBase
@@ -41,12 +40,14 @@ namespace UniversityPortal.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateGrade(int id, Grade grade)
+        public async Task<ActionResult> UpdateGrade(int id, GradeDto gradeDto)
         {
-            if (id != grade.Id)
+            if (id != gradeDto.Id)
             {
                 return BadRequest();
             }
+            var grade = _mapper.Map<Grade>(gradeDto);
+
             await _gradeService.UpdateGradeAsync(grade);
             return NoContent();
         }
