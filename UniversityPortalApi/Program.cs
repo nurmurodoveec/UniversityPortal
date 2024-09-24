@@ -60,6 +60,7 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 builder.Services.AddValidatorsFromAssemblyContaining<StudentValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<GradeValidator>();
+builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddScoped<LogActionFilter>();
 builder.Services.AddScoped<GlobalExceptionFilter>();
 builder.Services.AddScoped<IStudentService, StudentService>();
