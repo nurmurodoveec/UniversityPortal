@@ -7,6 +7,7 @@ using UniversityPortal.Api.Services;
 using UniversityPortalApi.Validators;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using static UniversityPortalApi.Validators.TimeTableValidator;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,7 +60,11 @@ builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 builder.Services.AddValidatorsFromAssemblyContaining<StudentValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<SubjectValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<TimetableValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<NewsValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<GradeValidator>();
+
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddScoped<LogActionFilter>();
 builder.Services.AddScoped<GlobalExceptionFilter>();
