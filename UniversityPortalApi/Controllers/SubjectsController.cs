@@ -9,7 +9,6 @@ using UniversityPortalApi.Dto;
 
 namespace UniversityPortal.Api.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class SubjectsController : ControllerBase
@@ -42,7 +41,7 @@ namespace UniversityPortal.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddSubject(SubjectDto subjectDto)
+        public async Task<ActionResult> AddSubject(CreateSubjectDto subjectDto)
         {
             var subject = _mapper.Map<Subject>(subjectDto);
             await _subjectService.AddSubjectAsync(subject);

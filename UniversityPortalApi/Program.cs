@@ -12,52 +12,15 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Identity;
+using UniversityPortalApi.Authentication;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = "yourIssuer",
-            ValidAudience = "yourAudience",
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("password123"))
-        };
-    });
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "UniversityPortalApi", Version = "v1" });
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Description = "JWT Authorization header using the Bearer scheme. Example: 'Bearer {token}'",
-        Name = "Authorization",
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
-    });
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement{
-    {
-        new OpenApiSecurityScheme
-        {
-            Reference = new OpenApiReference
-            {
-                Type = ReferenceType.SecurityScheme,
-                Id = "Bearer"
-            }
-        },
-        new string[] {}
-    }});
-});
+builder.Services.AddControllers();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddControllers();
 
 
 builder.Services.AddControllers(options =>
@@ -66,21 +29,113 @@ builder.Services.AddControllers(options =>
     options.Filters.Add<GlobalExceptionFilter>();  
 });
 
-builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
+//Add Identity Roles
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
 {
-    options.InvalidModelStateResponseFactory = context =>
-    {
-        var errors = context.ModelState
-            .Where(e => e.Value.Errors.Count > 0)
-            .Select(e => new { Field = e.Key, Error = e.Value.Errors.First().ErrorMessage });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "UniversityPortalApi", Version = "v1" });
 
-        return new BadRequestObjectResult(new
+    // Security definition
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme. Example: 'Bearer {token}'",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+
+    // Add security requirement
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
         {
-            Message = "Validation Failed",
-            Errors = errors
-        });
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
+builder.Services.AddIdentityCore<AppUser>()
+    .AddSignInManager()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
+
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    var secret = builder.Configuration["JwtConfig:Secret"];
+    var issuer = builder.Configuration["JwtConfig:ValidIssuer"];
+    var audience = builder.Configuration["JwtConfig:ValidAudiences"];
+    if (secret is null || issuer is null || audience is null)
+    {
+        throw new ApplicationException("Jwt is not set in the Configuration");
+    }
+    options.SaveToken = true;
+    options.RequireHttpsMetadata = false;
+    options.TokenValidationParameters = new TokenValidationParameters()
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidIssuer = issuer,
+        ValidAudience = audience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret))
+    };
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            // Read token from the AuthToken cookie
+            context.Token = context.Request.Cookies["AuthToken"];
+            return Task.CompletedTask;
+        },
+        OnChallenge = context =>
+        {
+            // Handle 401 Unauthorized
+            if (context.Response.StatusCode == 401)
+            {
+                context.Response.Redirect("/Auth/Login");
+                context.HandleResponse(); // Skip the default response
+            }
+            return Task.CompletedTask;
+        },
+        OnForbidden = context =>
+        {
+            // Handle 403 Forbidden
+            context.Response.Redirect("/Auth/Login");
+            return Task.CompletedTask;
+        }
     };
 });
+
+builder.Services.AddAuthorizationBuilder();
+//builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
+//{
+//    options.InvalidModelStateResponseFactory = context =>
+//    {
+//        var errors = context.ModelState
+//            .Where(e => e.Value.Errors.Count > 0)
+//            .Select(e => new { Field = e.Key, Error = e.Value.Errors.First().ErrorMessage });
+
+//        return new BadRequestObjectResult(new
+//        {
+//            Message = "Validation Failed",
+//            Errors = errors
+//        });
+//    };
+//});
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 builder.Services.AddValidatorsFromAssemblyContaining<StudentValidator>();
@@ -98,7 +153,7 @@ builder.Services.AddScoped<IGradeService, GradeService>();
 builder.Services.AddScoped<ITimetableService, TimetableService>();
 builder.Services.AddScoped<INewsService, NewsService>();
 
-
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -111,11 +166,10 @@ if (app.Environment.IsDevelopment())
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "University Portal v1");
     });
 }
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

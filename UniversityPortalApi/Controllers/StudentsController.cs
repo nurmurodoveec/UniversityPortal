@@ -9,7 +9,6 @@ using UniversityPortalApi.Dto;
 
 namespace UniversityPortal.Api.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class StudentsController : ControllerBase
@@ -41,7 +40,7 @@ namespace UniversityPortal.Api.Controllers
             return Ok(student);
         }
         [HttpPost]
-        public async Task<IActionResult> CreateStudent([FromBody] StudentDto studentDto)
+        public async Task<IActionResult> CreateStudent([FromBody] CreateStudentDto studentDto)
         {
             if (!ModelState.IsValid)
             {

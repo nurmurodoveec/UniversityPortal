@@ -9,7 +9,6 @@ using UniversityPortalApi.Dto;
 
 namespace UniversityPortal.Api.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class TimetablesController : ControllerBase
@@ -32,7 +31,7 @@ namespace UniversityPortal.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddTimetableEntry(TimetableDto timetableDto)
+        public async Task<ActionResult> AddTimetableEntry(CreateTimetableDto timetableDto)
         {
             var timetable = _mapper.Map<Timetable>(timetableDto);
             await _timetableService.AddTimetableAsync(timetable);

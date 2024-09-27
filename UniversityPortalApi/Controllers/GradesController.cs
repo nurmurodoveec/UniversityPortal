@@ -10,7 +10,6 @@ using UniversityPortalApi.Dto;
 
 namespace UniversityPortal.Api.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class GradesController : ControllerBase
@@ -24,7 +23,7 @@ namespace UniversityPortal.Api.Controllers
         }
 
         [HttpGet("{studentId}")]
-       
+        [Authorize]
         public async Task<ActionResult<IEnumerable<GradeDto>>> GetGrades(int studentId)
         {
             var grades = await _gradeService.GetGradesByStudentIdAsync(studentId);
@@ -33,7 +32,7 @@ namespace UniversityPortal.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddGrade(GradeDto gradeDto)
+        public async Task<ActionResult> AddGrade(CreateGradeDto gradeDto)
         {
             var grade = _mapper.Map<Grade>(gradeDto);
             await _gradeService.AddGradeAsync(grade);

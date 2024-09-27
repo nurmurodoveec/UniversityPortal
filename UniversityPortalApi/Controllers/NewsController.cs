@@ -9,7 +9,6 @@ using UniversityPortalApi.Dto;
 
 namespace UniversityPortal.Api.Controllers
 {
-    [Authorize]
     [ServiceFilter(typeof(LogActionFilter))]
     [ApiController]
     [Route("api/[controller]")]
@@ -44,7 +43,7 @@ namespace UniversityPortal.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> PublishNews(NewsDto newsDto)
+        public async Task<ActionResult> PublishNews(CreateNewsDto newsDto)
         {
             var news = _mapper.Map<News>(newsDto);
             await _newsService.AddNewsAsync(news);
