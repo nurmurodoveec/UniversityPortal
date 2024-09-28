@@ -11,6 +11,5 @@ namespace UniversityPortal.Api.Interfaces
         Task AddTimetableAsync(Timetable timetable);
         Task UpdateTimetableAsync(Timetable timetable);
         Task DeleteTimetableAsync(int id);
-       
     }
 }

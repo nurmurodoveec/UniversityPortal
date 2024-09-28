@@ -11,6 +11,7 @@ namespace UniversityPortal.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    
     public class StudentsController : ControllerBase
     {
         private readonly IStudentService _studentService;

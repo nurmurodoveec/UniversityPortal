@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using UniversityPortalApi.Dto;
 
-public class StudentValidator : AbstractValidator<StudentDto>
+public class StudentValidator : AbstractValidator<CreateStudentDto>
 {
     public StudentValidator()
     {

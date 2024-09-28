@@ -63,7 +63,6 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 builder.Services.AddIdentityCore<AppUser>()
-    .AddSignInManager()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
@@ -83,8 +82,7 @@ builder.Services.AddAuthentication(options =>
     {
         throw new ApplicationException("Jwt is not set in the Configuration");
     }
-    options.SaveToken = true;
-    options.RequireHttpsMetadata = false;
+
     options.TokenValidationParameters = new TokenValidationParameters()
     {
         ValidateIssuer = true,
@@ -120,22 +118,22 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddAuthorizationBuilder();
-//builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
-//{
-//    options.InvalidModelStateResponseFactory = context =>
-//    {
-//        var errors = context.ModelState
-//            .Where(e => e.Value.Errors.Count > 0)
-//            .Select(e => new { Field = e.Key, Error = e.Value.Errors.First().ErrorMessage });
+builder.Services.AddAuthorization();
+builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var errors = context.ModelState
+            .Where(e => e.Value.Errors.Count > 0)
+            .Select(e => new { Field = e.Key, Error = e.Value.Errors.First().ErrorMessage });
 
-//        return new BadRequestObjectResult(new
-//        {
-//            Message = "Validation Failed",
-//            Errors = errors
-//        });
-//    };
-//});
+        return new BadRequestObjectResult(new
+        {
+            Message = "Validation Failed",
+            Errors = errors
+        });
+    };
+});
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 builder.Services.AddValidatorsFromAssemblyContaining<StudentValidator>();
@@ -143,7 +141,6 @@ builder.Services.AddValidatorsFromAssemblyContaining<SubjectValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<TimetableValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<NewsValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<GradeValidator>();
-
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddScoped<LogActionFilter>();
 builder.Services.AddScoped<GlobalExceptionFilter>();

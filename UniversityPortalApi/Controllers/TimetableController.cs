@@ -37,5 +37,19 @@ namespace UniversityPortal.Api.Controllers
             await _timetableService.AddTimetableAsync(timetable);
             return CreatedAtAction(nameof(GetTimetable), new { id = timetable.Id }, timetableDto);
         }
+   
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteTimetableEntry(int id)
+        {
+            var timetableEntry = await _timetableService.GetTimetableByIdAsync(id);
+            if (timetableEntry == null)
+            {
+                return NotFound(new { message = "Timetable entry not found" });
+            }
+
+            await _timetableService.DeleteTimetableAsync(id);
+            return Ok(new { message = "Timetable entry deleted successfully" });
+        }
+
     }
 }

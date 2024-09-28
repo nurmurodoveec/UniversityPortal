@@ -47,5 +47,19 @@ namespace UniversityPortal.Api.Controllers
             await _subjectService.AddSubjectAsync(subject);
             return CreatedAtAction(nameof(GetAllSubjects), new { id = subject.Id }, subject);
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteSubject(int id)
+        {
+            var subject = await _subjectService.GetSubjectByIdAsync(id);
+            if (subject == null)
+            {
+                return NotFound(new { message = "Subject not found" });
+            }
+
+            await _subjectService.DeleteSubjectAsync(id);
+            return Ok(new { message = "Subject deleted successfully" });
+        }
+
     }
 }

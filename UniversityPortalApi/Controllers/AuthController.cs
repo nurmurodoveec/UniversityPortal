@@ -12,6 +12,7 @@ namespace AuthApp2.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+
 public class AccountController(UserManager<AppUser> userManager, IConfiguration configuration, SignInManager<AppUser> signingManager) : ControllerBase
 {
     private readonly SignInManager<AppUser> _signInManager = signingManager ?? throw new ArgumentNullException(nameof(configuration));
@@ -37,6 +38,7 @@ public class AccountController(UserManager<AppUser> userManager, IConfiguration 
         }
         return BadRequest(ModelState);
     }
+
     [HttpPost("Register")]
     public async Task<IActionResult> Register([FromBody] AddOrUpdateUserModel model)
     {
@@ -60,7 +62,7 @@ public class AccountController(UserManager<AppUser> userManager, IConfiguration 
             if (result.Succeeded )
             {
                 var token = await GenerateToken(user);
-                return Ok(new { token });
+                return Ok(token);
             }
 
             foreach (var error in result.Errors)
@@ -68,6 +70,7 @@ public class AccountController(UserManager<AppUser> userManager, IConfiguration 
                 ModelState.AddModelError("", error.Description);
             }
         }
+
         return BadRequest(ModelState);
 
     }
@@ -98,7 +101,5 @@ public class AccountController(UserManager<AppUser> userManager, IConfiguration 
         var securityToken = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(securityToken);
     }
-
-
 
 }

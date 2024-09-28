@@ -3,7 +3,7 @@ using UniversityPortalApi.Dto;
 
 namespace UniversityPortalApi.Validators
 {
-    public class NewsValidator : AbstractValidator<NewsDto>
+    public class NewsValidator : AbstractValidator<CreateNewsDto>
     {
         public NewsValidator()
         {

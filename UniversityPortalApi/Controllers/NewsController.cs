@@ -9,6 +9,7 @@ using UniversityPortalApi.Dto;
 
 namespace UniversityPortal.Api.Controllers
 {
+    [Authorize]
     [ServiceFilter(typeof(LogActionFilter))]
     [ApiController]
     [Route("api/[controller]")]
@@ -49,5 +50,18 @@ namespace UniversityPortal.Api.Controllers
             await _newsService.AddNewsAsync(news);
             return CreatedAtAction(nameof(GetAllNews), new { id = news.Id }, newsDto);
         }
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteNews(int id)
+        {
+            var news = await _newsService.GetNewsByIdAsync(id);
+            if (news == null)
+            {
+                return NotFound(new { message = "News article not found" });
+            }
+
+            await _newsService.DeleteNewsAsync(id);
+            return Ok(new { message = "News article deleted successfully" });
+        }
+
     }
 }

@@ -5,7 +5,7 @@ namespace UniversityPortalApi.Validators
 {
     public class TimeTableValidator
     {
-        public class TimetableValidator : AbstractValidator<TimetableDto>
+        public class TimetableValidator : AbstractValidator<CreateTimetableDto>
         {
             public TimetableValidator()
             {
