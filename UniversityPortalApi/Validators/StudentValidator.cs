@@ -4,7 +4,7 @@ using UniversityPortalApi.Dto;
 public class StudentValidator : AbstractValidator<CreateStudentDto>
 {
     public StudentValidator()
-    {
+     {
         RuleFor(s => s.FirstName)
             .NotEmpty().WithMessage("First Name is required")
             .Matches(@"^[a-zA-Z]+$").WithMessage("First Name must contain only letters");

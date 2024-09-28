@@ -7,7 +7,7 @@
         public string Author { get; set; }
 
 
-        public DateTime PublishedDate { get; set; }
+        public DateTime PublishedDate { get; set; } = DateTime.UtcNow;
     }
 
 }
