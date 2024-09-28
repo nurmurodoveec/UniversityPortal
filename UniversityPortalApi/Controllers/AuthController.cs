@@ -59,7 +59,7 @@ public class AccountController(UserManager<AppUser> userManager, IConfiguration 
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
-            if (result.Succeeded )
+            if (result.Succeeded)
             {
                 var token = await GenerateToken(user);
                 return Ok(token);

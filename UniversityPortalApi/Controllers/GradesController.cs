@@ -10,7 +10,7 @@ using UniversityPortalApi.Dto;
 
 namespace UniversityPortal.Api.Controllers
 {
-    [Authorize]
+    
     [ApiController]
     [Route("api/[controller]")]
     public class GradesController : ControllerBase
@@ -24,7 +24,7 @@ namespace UniversityPortal.Api.Controllers
         }
 
         [HttpGet("{studentId}")]
-        [Authorize]
+        
         public async Task<ActionResult<IEnumerable<GradeDto>>> GetGrades(int studentId)
         {
             var grades = await _gradeService.GetGradesByStudentIdAsync(studentId);

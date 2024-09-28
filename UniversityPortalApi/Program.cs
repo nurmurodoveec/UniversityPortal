@@ -16,20 +16,21 @@ using Microsoft.AspNetCore.Identity;
 using UniversityPortalApi.Authentication;
 using Microsoft.Extensions.Options;
 
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-
 builder.Services.AddControllers(options =>
 {
-    options.Filters.Add<LogActionFilter>();      
-    options.Filters.Add<GlobalExceptionFilter>();  
+    options.Filters.Add<LogActionFilter>();
+    options.Filters.Add<GlobalExceptionFilter>();
 });
 
-//Add Identity Roles
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -62,7 +63,9 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
-builder.Services.AddIdentityCore<AppUser>()
+
+
+builder.Services.AddIdentity<AppUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
@@ -73,6 +76,7 @@ builder.Services.AddAuthentication(options =>
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 })
+
 .AddJwtBearer(options =>
 {
     var secret = builder.Configuration["JwtConfig:Secret"];
@@ -90,35 +94,37 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = issuer,
         ValidAudience = audience,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret))
+
     };
-    options.Events = new JwtBearerEvents
-    {
-        OnMessageReceived = context =>
-        {
-            // Read token from the AuthToken cookie
-            context.Token = context.Request.Cookies["AuthToken"];
-            return Task.CompletedTask;
-        },
-        OnChallenge = context =>
-        {
-            // Handle 401 Unauthorized
-            if (context.Response.StatusCode == 401)
-            {
-                context.Response.Redirect("/Auth/Login");
-                context.HandleResponse(); // Skip the default response
-            }
-            return Task.CompletedTask;
-        },
-        OnForbidden = context =>
-        {
-            // Handle 403 Forbidden
-            context.Response.Redirect("/Auth/Login");
-            return Task.CompletedTask;
-        }
-    };
+    //options.Events = new JwtBearerEvents
+    //{
+    //    OnMessageReceived = context =>
+    //    {
+    //        // Read token from the AuthToken cookie
+    //        context.Token = context.Request.Cookies["AuthToken"];
+    //        return Task.CompletedTask;
+    //    },
+    //    OnChallenge = context =>
+    //    {
+    //        // Handle 401 Unauthorized
+    //        if (context.Response.StatusCode == 401)
+    //        {
+    //            context.Response.Redirect("/Auth/Login");
+    //            context.HandleResponse(); // Skip the default response
+    //        }
+    //        return Task.CompletedTask;
+    //    },
+    //    OnForbidden = context =>
+    //    {
+    //        // Handle 403 Forbidden
+    //        context.Response.Redirect("/Auth/Login");
+    //        return Task.CompletedTask;
+    //    }
+    //};
 });
 
-builder.Services.AddAuthorization();
+
+
 builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
 {
     options.InvalidModelStateResponseFactory = context =>
@@ -137,10 +143,6 @@ builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 builder.Services.AddValidatorsFromAssemblyContaining<StudentValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<SubjectValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<TimetableValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<NewsValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<GradeValidator>();
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddScoped<LogActionFilter>();
 builder.Services.AddScoped<GlobalExceptionFilter>();

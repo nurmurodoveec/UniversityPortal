@@ -9,7 +9,6 @@ using UniversityPortalApi.Dto;
 
 namespace UniversityPortal.Api.Controllers
 {
-    [Authorize]
     [ServiceFilter(typeof(LogActionFilter))]
     [ApiController]
     [Route("api/[controller]")]
